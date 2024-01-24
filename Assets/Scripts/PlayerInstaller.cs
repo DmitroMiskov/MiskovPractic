@@ -7,6 +7,6 @@ public class PlayerInstaller : MonoInstaller
     {
         Container.Bind<IMover>().To<PlayerMovement>().FromComponentInHierarchy().AsSingle();
         Container.Bind<PlayerController>().AsSingle();
-        Container.Bind<IWeaponController>().To<WeaponController>().AsSingle();
+        
     }
 }

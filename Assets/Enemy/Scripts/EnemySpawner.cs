@@ -3,30 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public class EnemySpawner : MonoBehaviour
+public class EnemySpawner : MonoBehaviour, IEnemyFactory
 {
-    private IEnemyFactory _enemyFactory;
-    
-    
-
     [SerializeField]
     private GameObject enemyPrefab;
     [SerializeField]
     private Transform spawnPoint;
 
-    [Inject]
-    public void Construct(IEnemyFactory enemyFactory)
-    {
-        _enemyFactory = enemyFactory;
-    }
-
     private void Start()
     {
-        
         StartCoroutine(StartSpawningEnemies());
     }
 
-    private System.Collections.IEnumerator StartSpawningEnemies()
+    private IEnumerator StartSpawningEnemies()
     {
         while (true)
         {
@@ -35,16 +24,27 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    public void SpawnAndAttackEnemy()
+    public Enemy CreateEnemy()
     {
-        Enemy enemy = _enemyFactory.CreateEnemy();
+        int health = Random.Range(50, 100);
+        int damage = Random.Range(10, 20);
+
+        Enemy enemy = new Enemy();
+        enemy.Initialize(health, damage);
+
+        return enemy;
+    }
+
+    private void SpawnAndAttackEnemy()
+    {
+        Enemy enemy = CreateEnemy();
         GameObject enemyGameObject = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
 
         EnemyController enemyController = enemyGameObject.GetComponent<EnemyController>();
         if (enemyController != null)
         {
             enemyController.Initialize(enemy);
-            Debug.Log("Enemy spawned with Health: " + enemy.GetHealth() + ", Damage: " + enemy.GetDamage());
+            Debug.Log("Enemy spawned with Health: " + enemy.EnemyHealth.HealthEnemy + ", Damage: " + enemy.Damage);
             enemyController.Attack();
         }
         else
@@ -52,4 +52,5 @@ public class EnemySpawner : MonoBehaviour
             Debug.LogError("EnemyController not found on the spawned enemy!");
         }
     }
+
 }

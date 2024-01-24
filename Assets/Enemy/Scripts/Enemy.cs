@@ -1,45 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using Zenject;
 
 [System.Serializable]
-public class Enemy
+public class Enemy : MonoBehaviour
 {
     [SerializeField]
-    private float health;
-    private float damage;
+    private Health enemyHealth;
 
-    public float Health { get { return health; } }
+    private int damage;
 
-    public Enemy(float health, float damage)
+    public int Damage { get { return damage; } }
+
+    public Health EnemyHealth { get { return enemyHealth; } }
+
+    public void Initialize(int initialHealth, int initialDamage)
     {
-        this.health = health;
-        this.damage = damage;
+        enemyHealth = new Health(initialHealth);
+        damage = initialDamage;
     }
 
-    public float GetHealth()
+    public void TakeDamage(int amount)
     {
-        return health;
+        enemyHealth.TakeDamage(amount);
+        CheckHealth();
     }
 
-    public float GetDamage()
+    public void Attack()
     {
-        return damage;
+        Debug.Log("Enemy is attacking with damage: " + Damage);
     }
 
-    public void TakeDamage(float amount)
+    private void CheckHealth()
     {
-        health -= amount;
-        if(health <= 0)
+        if (EnemyHealth.HealthEnemy <= 0f)
         {
             Die();
-        } 
+        }
     }
 
     private void Die()
     {
         Debug.Log("Enemy died!");
+        Destroy(gameObject);
     }
 }
 

@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public class PlayerController : MonoBehaviour, IWeaponController
+public class PlayerController : MonoBehaviour
 {
-    private IWeaponController weaponController;
 
     [Inject]
-    public void Construct(IWeaponController weaponController)
-    {
-        this.weaponController = weaponController;
-    }
+   
 
     private void Update()
     {
@@ -20,7 +16,7 @@ public class PlayerController : MonoBehaviour, IWeaponController
 
     public void HandleInput()
     {
-        if (weaponController != null)
+        /*if (weaponController != null)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
@@ -38,16 +34,8 @@ public class PlayerController : MonoBehaviour, IWeaponController
         else
         {
             Debug.LogError("WeaponController is not initialized!");
-        }
+        }*/
     }
 
-    public void ChangeWeapon(Weapon newWeapon)
-    {
-        weaponController.ChangeWeapon(newWeapon);
-    }
-
-    public void Shoot()
-    {
-        weaponController.Shoot();
-    }
+   
 }
