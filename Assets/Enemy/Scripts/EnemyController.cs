@@ -6,6 +6,7 @@ using Zenject;
 public class EnemyController : MonoBehaviour
 {
     private Enemy enemy;
+    public GameObject coinPrefab;
 
     public Enemy Enemy { get { return enemy; } }
 
@@ -23,7 +24,7 @@ public class EnemyController : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        enemy.EnemyHealth.TakeDamage(amount);
+        enemy.TakeDamage(amount);
         CheckHealth();
     }
 
@@ -31,13 +32,23 @@ public class EnemyController : MonoBehaviour
     {
         if (CurrentHealth <= 0f)
         {
+            SpawnCoins();
             Die();
         }
+        
     }
 
     private void Die()
     {
         Debug.Log("Enemy died!");
         Destroy(gameObject);
+    }
+
+    private void SpawnCoins()
+    {
+        if (coinPrefab != null)
+        {
+            Instantiate(coinPrefab, transform.position, Quaternion.identity);
+        }
     }
 }

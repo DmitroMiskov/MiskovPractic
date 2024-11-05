@@ -8,8 +8,8 @@ using Zenject;
 public class Pistol : MonoBehaviour, IWeapon
 {
     private float timeShot;
-    public int currentAmmo;
-    public int allAmmo;
+    public int currentAmmo = 15;
+    public int allAmmo = 45;
     public Transform shotDir;
     public GameObject ammo;
     public float offset;
@@ -35,6 +35,20 @@ public class Pistol : MonoBehaviour, IWeapon
     {
         Vector3 difference = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
         float rotateZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+
+        // Перевірка кута і віддзеркалення
+        if (rotateZ > 90 || rotateZ < -90)
+        {
+            // Віддзеркалення по осі X
+            transform.localScale = new Vector3(-0.025f, 0.025f, 0.025f);
+            rotateZ += 180; // Додати 180 градусів для правильної орієнтації
+        }
+        else
+        {
+            // Нормальний масштаб
+            transform.localScale = new Vector3(0.025f, 0.025f, 0.025f);
+        }
+
         transform.rotation = Quaternion.Euler(0f, 0f, rotateZ + offset);
 
         if (timeShot <= 0 && Input.GetMouseButton(0) && currentAmmo > 0)
@@ -47,12 +61,12 @@ public class Pistol : MonoBehaviour, IWeapon
 
         ammoCount.text = $"{currentAmmo}/{allAmmo}";
 
-
         if (Input.GetKeyDown(KeyCode.R) && allAmmo > 0)
         {
             Reload();
         }
     }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

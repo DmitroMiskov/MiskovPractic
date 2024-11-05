@@ -28,7 +28,7 @@ public class AmmoPistol : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+        var enemy = collision.gameObject.GetComponent<EnemyController>();
 
         if (enemy != null) 
         {

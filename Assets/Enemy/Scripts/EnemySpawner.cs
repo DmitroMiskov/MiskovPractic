@@ -6,7 +6,8 @@ using Zenject;
 public class EnemySpawner : MonoBehaviour, IEnemyFactory
 {
     [SerializeField]
-    private GameObject enemyPrefab;
+    private GameObject[] enemyPrefabs;
+
     [SerializeField]
     private Transform spawnPoint;
 
@@ -24,21 +25,31 @@ public class EnemySpawner : MonoBehaviour, IEnemyFactory
         }
     }
 
+    // Реалізація відсутнього методу з інтерфейсу
     public Enemy CreateEnemy()
     {
+        // Вибрати випадковий індекс префабу
+        int randomPrefabIndex = Random.Range(0, enemyPrefabs.Length);
+        return CreateEnemy(randomPrefabIndex);
+    }
+
+    public Enemy CreateEnemy(int prefabIndex)
+    {
+        int randomPrefabIndex = Random.Range(0, enemyPrefabs.Length);
         int health = Random.Range(50, 100);
         int damage = Random.Range(10, 20);
 
         Enemy enemy = new Enemy();
-        enemy.Initialize(health, damage);
+        enemy.Initialize(health, damage, randomPrefabIndex);
 
         return enemy;
     }
 
     private void SpawnAndAttackEnemy()
     {
+        // Виклик реалізованого методу
         Enemy enemy = CreateEnemy();
-        GameObject enemyGameObject = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+        GameObject enemyGameObject = Instantiate(enemyPrefabs[enemy.PrefabIndex], spawnPoint.position, Quaternion.identity);
 
         EnemyController enemyController = enemyGameObject.GetComponent<EnemyController>();
         if (enemyController != null)
@@ -52,5 +63,4 @@ public class EnemySpawner : MonoBehaviour, IEnemyFactory
             Debug.LogError("EnemyController not found on the spawned enemy!");
         }
     }
-
 }

@@ -11,21 +11,21 @@ using Zenject;
 public class WeaponFactory : IWeaponFactory
 {
     private DiContainer container;
-    private GameObject prefab;
+    private string prefabPath = "Weapons/Prefabs/";
 
     public WeaponFactory(DiContainer container)
     {
         this.container = container;
-        prefab = Resources.Load<GameObject>("Weapons/Prefabs/Pixel-Pistol");
     }
 
-    public IWeapon Create()
+    public IWeapon Create(string weaponName)
     {
-
-        var weaponGameObject = container.InstantiatePrefabForComponent<IWeapon>(prefab);
-
-        
-
-        return weaponGameObject;
+        GameObject prefab = Resources.Load<GameObject>(prefabPath + weaponName);
+        if (prefab == null) 
+        {
+            Debug.Log("Префаб зброї не знайдено за адресою: " + prefabPath + weaponName);
+            return null;
+        }
+        return container.InstantiatePrefabForComponent<IWeapon>(prefab);
     }
 }

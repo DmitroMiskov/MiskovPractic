@@ -7,5 +7,5 @@ using Zenject;
 
 public interface IWeaponFactory
 {
-    IWeapon Create();
+    IWeapon Create(string weaponName);
 }

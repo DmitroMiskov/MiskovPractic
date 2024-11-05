@@ -1,41 +1,77 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Zenject;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
+    GamManager gameManager;
+    public UnityEvent OnHealthChanged;
 
-    [Inject]
-   
+    private float maxHealth = 10f;
+    private float currentHealth;
 
-    private void Update()
+    public float RemainingHealthPercentage => currentHealth / maxHealth;
+
+    void Start()
     {
-        HandleInput();
+        currentHealth = maxHealth;
     }
 
-    public void HandleInput()
+    public Vector2 TakeInput()
     {
-        /*if (weaponController != null)
+        Vector2 direction = Vector2.zero;
+
+        if (Input.GetKey(KeyCode.W))
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                weaponController.ChangeWeapon(new Pistol());
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                weaponController.ChangeWeapon(new Shotgun());
-            }
-            else if (Input.GetMouseButtonDown(0))
-            {
-                weaponController.Shoot();
-            }
+            direction += Vector2.up;
         }
-        else
+        if (Input.GetKey(KeyCode.A))
         {
-            Debug.LogError("WeaponController is not initialized!");
-        }*/
+            direction += Vector2.left;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            direction += Vector2.down;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            direction += Vector2.right;
+        }
+
+        return direction;
     }
 
-   
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TakeDamage(1);
+        }
+    }
+
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+            PlayerDeadHandler();
+        }
+        UpdateHealthUI();
+        OnHealthChanged.Invoke();
+    }
+
+    private void PlayerDeadHandler()
+    {
+        Debug.Log("Player is dead!");
+        Destroy(gameObject);
+        gameManager.GameOver();
+    }
+
+    private void UpdateHealthUI()
+    {
+        Debug.Log("Current Health: " + currentHealth + "/" + maxHealth);
+    }
 }

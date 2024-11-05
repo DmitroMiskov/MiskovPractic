@@ -7,9 +7,10 @@ using Zenject;
 public class WeaponSwitch : MonoBehaviour
 {
     private IWeaponFactory weaponFactory;
-    private IWeapon[] weapons = new IWeapon[2];
+    private IWeapon[] weapons = new IWeapon[3];
     private int currentWeaponIndex = 0;
-    private IWeapon pickupWeapon;
+    
+    public GameObject weaponHolder;
 
     [Inject]
     public void Construct(IWeaponFactory weaponFactory)
@@ -19,41 +20,36 @@ public class WeaponSwitch : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < weapons.Length; i++)
-        {
-            IWeapon createdWeapon = weaponFactory.Create();
+        weapons[0] = weaponFactory.Create("Pixel-Pistol");
 
-            if (createdWeapon != null)
+
+        for (int i = 0; i < weapons.Length; i++) 
+        {
+            if(weapons[i] == null)
             {
-                weapons[i] = createdWeapon;
                 weapons[i].GetGameObject().SetActive(false);
-            }
-            else
-            {
-                Debug.LogError("Failed to create weapon at index " + i);
+                weapons[i].GetGameObject().transform.parent = weaponHolder.transform;
             }
         }
-
-        SwitchWeapon(0);
     }
 
     void Update()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if(scroll > 0f )
+        if (scroll > 0f)
         {
             SwitchWeapon((currentWeaponIndex + 1) % weapons.Length);
         }
-        else if( scroll < 0f )
+        else if (scroll < 0f)
         {
-            SwitchWeapon((currentWeaponIndex - 1) % weapons.Length);
+            SwitchWeapon((currentWeaponIndex - 1 + weapons.Length) % weapons.Length);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && weapons.Length > 0)
         {
             SwitchWeapon(0);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && weapons.Length > 1)
         {
             SwitchWeapon(1);
         }
@@ -77,17 +73,27 @@ public class WeaponSwitch : MonoBehaviour
     {
         IWeapon weapon = other.GetComponent<IWeapon>();
         if (weapon != null && weapon == pickupWeapon)
-        { 
+        {
             pickupWeapon = null;
         }
     }
 
     private void PickupWeapon()
     {
-        Destroy(weapons[currentWeaponIndex].GetGameObject());
-        weapons[currentWeaponIndex] = pickupWeapon;
-        weapons[currentWeaponIndex].GetGameObject().SetActive(true);
-        pickupWeapon = null;
+        /*Destroy(weapons[currentWeaponIndex].GetGameObject());
+
+        IWeapon createdWeapon = weaponFactory.Create();
+        if (createdWeapon != null)
+        {
+            weapons[currentWeaponIndex] = createdWeapon;
+            weapons[currentWeaponIndex].GetGameObject().SetActive(true);
+        }
+        else
+        {
+            Debug.LogError("Failed to create a new weapon after picking up.");
+        }
+
+        pickupWeapon = null;*/
     }
 
     private void SwitchWeapon(int index)
@@ -98,15 +104,12 @@ public class WeaponSwitch : MonoBehaviour
         }
 
         currentWeaponIndex = index;
-
-        // Перевірте, чи новий об'єкт weapons[currentWeaponIndex] не є null
         if (weapons[currentWeaponIndex] != null)
         {
             weapons[currentWeaponIndex].GetGameObject().SetActive(true);
         }
         else
         {
-            // Обробка помилки, якщо об'єкт weapons[currentWeaponIndex] має значення null
             Debug.LogError("Weapon at index " + currentWeaponIndex + " is null.");
         }
     }

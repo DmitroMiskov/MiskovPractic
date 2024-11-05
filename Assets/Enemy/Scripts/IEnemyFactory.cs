@@ -5,5 +5,5 @@ using Zenject;
 
 public interface IEnemyFactory
 {
-    Enemy CreateEnemy(); 
+    Enemy CreateEnemy(int prefabIndex); 
 }
